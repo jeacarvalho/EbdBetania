@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class processaArquivosClasses {
 	public static String CAMINHO_LOG = "/home/01553360702/Dropbox/Igreja/EBD/cadastro"; 
@@ -13,37 +14,65 @@ public class processaArquivosClasses {
 		File dir = new File(CAMINHO_LOG) ; 
 		 
 		File[] arquivos = dir.listFiles();
-
+		ArrayList<Aluno> alunos = new ArrayList<Aluno>();
 		for (int i = 0; i < arquivos.length; i++) {
-			leUmFileCarregaBanco(arquivos[i].getPath());
+			String arquivo = arquivos[i].getName();
+			String classe = arquivo.substring(0, arquivo.indexOf("*"));
+			arquivo =  arquivo.substring(arquivo.indexOf("*"), arquivo.length());
+			String anoClasse = arquivo.substring(arquivo.indexOf("*") +1 ,arquivo.indexOf("-"));
+			String semestreClasse = arquivo.substring(arquivo.indexOf("-") +1 , arquivo.indexOf("."));
+			leUmFileCarregaBanco(arquivos[i].getPath(), alunos, classe, anoClasse, semestreClasse);
 		}
+		
+		/*for (Aluno aluno : alunos) {
+			System.out.println(aluno.toString());
+		}*/
+		
+		
+		
 	}
 	
-	public static void leUmFileCarregaBanco(String nomeArq){
+	public static void leUmFileCarregaBanco(String nomeArq, ArrayList<Aluno> alunos, String nomeClasse, String anoClasse, String semestreClasse ){
 		 File e = new File(nomeArq);
 		 String linha;
+		 Classe classeAluno = new Classe();
+		 classeAluno.setNomeClasse(nomeClasse);
+		 classeAluno.setAno(anoClasse);
+		 classeAluno.setSemestre(semestreClasse);
 		 
 		 BufferedReader in;
 		try {
 			in = new BufferedReader(new FileReader(e));
-			 while (in.ready()){
+			
+			if(in.ready()){
+				linha = in.readLine();//retira cabecalho	
+			}
+			 
+			while (in.ready()){
+				 
 				 linha = in.readLine();
-				 linha = in.readLine();//retira cabecalho
 				 Aluno aluno = new Aluno();
-				 linha = linha.substring(linha.indexOf(",") +2 , linha.length());//retira nr na planilha e primeiro aspas
-				 aluno.setNome(linha.substring(0 , linha.indexOf('"')));
-				 linha = linha.substring(linha.indexOf('"') +3 , linha.length());//retira nome  e virgula
-				 aluno.setTelefone1(linha.substring(0 , linha.indexOf('"')));
+				 
+				 String[] camposLinha = quebraLinhaCampos(linha, ',');
+				 
+				 aluno.setNome(camposLinha[1]);
+				 aluno.setTelefone1(camposLinha[2]);
 				 if(aluno.getTelefone1().indexOf("/") >=0){
 					 //tenho dois telefones
-					 aluno.setTelefone2(aluno.getTelefone1().substring(aluno.getTelefone1().indexOf("/"), aluno.getTelefone1().indexOf('"')));
+					 aluno.setTelefone2(aluno.getTelefone1().substring(aluno.getTelefone1().indexOf("/") + 1, aluno.getTelefone1().length()));
 					 aluno.setTelefone1(aluno.getTelefone1().substring(0,aluno.getTelefone1().indexOf("/")));
 				 }
-				 linha = linha.substring(linha.indexOf('"') +3 , linha.length());//retira telefone e virgula
-				 aluno.setEmail(linha.substring(0 , linha.indexOf('"')));
-				 linha = linha.substring(linha.indexOf('"') +2 , linha.length());//retira email. Na data nascimento arquivo csv não coloca aspas
-				 aluno.setDtNasc(linha.substring(0 , linha.indexOf(",")));
-				 linha = linha.substring(linha.indexOf('"') +1 , linha.length());//retira data nascimento
+				 aluno.setEmail(camposLinha[3]);
+				 aluno.setDtNasc(camposLinha[4]);
+				 aluno.setIsMembro(camposLinha[6]);
+				 Celula celulaAluno = new Celula();
+				 celulaAluno.setNomeLider(((camposLinha[7].indexOf("-") == -1) ? camposLinha[7] : camposLinha[7].substring(camposLinha[7].indexOf("-") + 1 , camposLinha[7].length())));
+				 aluno.setCelulaAluno(celulaAluno);
+			 	 aluno.setClasseAluno(classeAluno);
+
+			 	 aluno.setClasseAluno(classeAluno);
+			 	 System.out.println(aluno.toString());
+				 alunos.add(aluno);
 				 
 			 }
 
@@ -83,6 +112,18 @@ public class processaArquivosClasses {
 			return true;
 	}*/
 
+		public static String[] quebraLinhaCampos(String linha, char separador){
+			String[] retorno = new String[8];
+			int i = 0;
+			while(i<=6){
+				retorno[i] = linha.substring(0, linha.indexOf(separador));
+				linha = linha.substring(linha.indexOf(separador) +1 , linha.length());
+				i = i+1;
+			}
+			retorno[7] = linha;
+			
+			return retorno;
+		}
 	
 	
 }
