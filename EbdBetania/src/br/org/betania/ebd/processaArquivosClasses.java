@@ -23,10 +23,10 @@ public class processaArquivosClasses {
 			String semestreClasse = arquivo.substring(arquivo.indexOf("-") +1 , arquivo.indexOf("."));
 			leUmFileCarregaBanco(arquivos[i].getPath(), alunos, classe, anoClasse, semestreClasse);
 		}
-		
-		/*for (Aluno aluno : alunos) {
-			System.out.println(aluno.toString());
-		}*/
+		BancoMysql b = new BancoMysql();
+		for (Aluno aluno : alunos) {
+			aluno.inserir(b);
+		}
 		
 		
 		
@@ -71,8 +71,7 @@ public class processaArquivosClasses {
 			 	 aluno.setClasseAluno(classeAluno);
 
 			 	 aluno.setClasseAluno(classeAluno);
-			 	 System.out.println(aluno.toString());
-				 alunos.add(aluno);
+			 	 alunos.add(aluno);
 				 
 			 }
 

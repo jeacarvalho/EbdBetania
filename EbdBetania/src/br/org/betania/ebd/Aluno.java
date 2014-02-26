@@ -1,12 +1,17 @@
 package br.org.betania.ebd;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 public class Aluno {
-	private String nome;
-	private String email;
-	private String dtNasc;
-	private String telefone1;
-	private String telefone2;
-	private String isMembro;
+	private String nome="";
+	private String email="";
+	private String dtNasc="";
+	private String telefone1="";
+	private String telefone2="";
+	private String isMembro="";
 	
 	private Celula celulaAluno;
 	private Classe classeAluno;
@@ -38,6 +43,7 @@ public class Aluno {
 	}
 	public String getDtNasc() {
 		return dtNasc;
+
 	}
 	public void setDtNasc(String dtNasc) {
 		this.dtNasc = retiraCaracter(dtNasc, '"');
@@ -70,4 +76,77 @@ public class Aluno {
 		return campoARetirar.replace(caractereARetirar, ' ');
 	}
 	
+	
+	public boolean inserir(BancoMysql b){
+		
+		try{
+			Class.forName("org.gjt.mm.mysql.Driver").newInstance();
+			Connection conn = b.getConn();
+			Statement st = conn.createStatement();
+			
+			String sql;
+			int idAluno = verificaExistenciaAluno(b);
+			if(idAluno == 0){
+				sql = ("INSERT INTO Aluno(nome, dtNasc, telefone1, telefone2, email, iSmembro) VALUES (" +
+	              	  "'"+this.getNome().trim()+"', " + "'"+this.getDtNasc().trim()+"', " + "'"+this.getTelefone1().trim()+"', " +
+	              	  "'"+this.getTelefone2().trim()+"', " +"'"+this.getEmail().trim()+"', " + "'"+this.getIsMembro().trim()+"' " +")") ;
+
+		 		
+				System.out.println(sql);
+				
+			   	st.executeUpdate(sql);
+			
+				st.close();
+			}
+			
+			idAluno = verificaExistenciaAluno(b);
+			
+			this.getClasseAluno().inserir(b, idAluno);
+			
+			
+			} catch(Exception ex){
+			ex.printStackTrace();
+		
+			}
+			
+		return true;
+	}
+	
+	private int verificaExistenciaAluno(BancoMysql b){
+		int retorno=0;
+		ResultSet rs;
+		try {
+			Class.forName("org.gjt.mm.mysql.Driver").newInstance();
+			Connection conn = b.getConn();
+			Statement st = conn.createStatement();
+			String sql = "SELECT idAluno FROM Aluno WHERE email='" + this.getEmail().trim() + "'";
+			st.executeQuery(sql);
+			rs = st.getResultSet();
+			if(rs.next()){
+			 retorno = rs.getInt("idAluno");	 
+			}
+				 
+			sql = "SELECT idAluno FROM Aluno WHERE nome='" + this.getNome().trim() + "'";
+			st.executeQuery(sql);
+			rs = st.getResultSet();
+			if(rs.next()){
+			 retorno = rs.getInt("idAluno");	 
+			}
+
+			sql = "SELECT idAluno FROM Aluno WHERE telefone1='" + this.getTelefone1().trim() + "' and dtNasc='" +  this.getDtNasc().trim()+ "'";
+			st.executeQuery(sql);
+			rs = st.getResultSet();
+			if(rs.next()){
+			 retorno = rs.getInt("idAluno");	 
+			}
+			
+			
+
+		} catch (InstantiationException | IllegalAccessException
+				| ClassNotFoundException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return retorno;
+	}
 }
