@@ -97,11 +97,11 @@ public class Aluno {
 			   	st.executeUpdate(sql);
 			
 				st.close();
+				idAluno = verificaExistenciaAluno(b);
 			}
 			
-			idAluno = verificaExistenciaAluno(b);
-			
 			this.getClasseAluno().inserir(b, idAluno);
+			this.getCelulaAluno().inserir(b, idAluno);
 			
 			
 			} catch(Exception ex){

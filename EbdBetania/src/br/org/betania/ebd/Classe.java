@@ -53,17 +53,21 @@ public class Classe {
 			   	st.executeUpdate(sql);
 			
 				st.close();
+				
+				idClasse = verificaExistenciaClasse(b);
 			}
-			//aqui ha uma chamada a mais, mas preciso pegar o idClasse se inseri no if
 			
-			idClasse = verificaExistenciaClasse(b);
-			conn = b.getConn();
-			st = conn.createStatement();
-			sql = "INSERT INTO aluno_classe(idAluno, idClasse) VALUES (" + String.valueOf(idAluno) + ", " + String.valueOf(idClasse) + ")" ;
-	 		
-		   	st.executeUpdate(sql);
-		
-			st.close();
+			if(verificaExistenciaAlunoClasse(b, idAluno, idClasse)==0){
+				conn = b.getConn();
+				st = conn.createStatement();
+				sql = "INSERT INTO aluno_classe(idAluno, idClasse) VALUES (" + String.valueOf(idAluno) + ", " + String.valueOf(idClasse) + ")" ;
+		 		
+			   	st.executeUpdate(sql);
+			
+				st.close();
+			}
+			
+
 			
 			
 			} catch(Exception ex){
@@ -95,5 +99,27 @@ public class Classe {
 		}
 		return retorno;
 	}	
+	
+	private int verificaExistenciaAlunoClasse(BancoMysql b, int idAluno, int idClasse){
+		int retorno=0;
+		ResultSet rs;
+		try {
+			Class.forName("org.gjt.mm.mysql.Driver").newInstance();
+			Connection conn = b.getConn();
+			Statement st = conn.createStatement();
+			String sql = "SELECT idClasse FROM aluno_classe WHERE idAluno=" + String.valueOf(idAluno) + " and idclasse=" +  String.valueOf(idClasse);
+			st.executeQuery(sql);
+			rs = st.getResultSet();
+			if(rs.next()){
+			 retorno = rs.getInt("idClasse");	 
+			}
+
+		} catch (InstantiationException | IllegalAccessException
+				| ClassNotFoundException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return retorno;
+	}
 	
 }

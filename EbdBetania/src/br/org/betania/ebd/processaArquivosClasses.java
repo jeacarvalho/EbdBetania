@@ -67,6 +67,12 @@ public class processaArquivosClasses {
 				 aluno.setIsMembro(camposLinha[6]);
 				 Celula celulaAluno = new Celula();
 				 celulaAluno.setNomeLider(((camposLinha[7].indexOf("-") == -1) ? camposLinha[7] : camposLinha[7].substring(camposLinha[7].indexOf("-") + 1 , camposLinha[7].length())));
+
+				 if(celulaAluno.getNomeLider().indexOf("/") >=0){
+					 celulaAluno.setNomeLider(celulaAluno.getNomeLider().substring(celulaAluno.getNomeLider().indexOf("/") + 1, celulaAluno.getNomeLider().length()));
+				 }
+
+				 
 				 aluno.setCelulaAluno(celulaAluno);
 			 	 aluno.setClasseAluno(classeAluno);
 
