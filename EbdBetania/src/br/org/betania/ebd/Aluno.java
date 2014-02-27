@@ -151,7 +151,7 @@ public class Aluno {
 			rs = st.getResultSet();
 			if(rs.next()){
 			 retorno = rs.getInt("idAluno");	 
-			}
+			} 
 				 
 			sql = "SELECT idAluno FROM Aluno WHERE nome='" + this.getNome().trim() + "'";
 			st.executeQuery(sql);
