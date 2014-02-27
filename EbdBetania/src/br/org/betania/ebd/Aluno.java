@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Random;
 
 public class Aluno {
 	private String nome="";
@@ -36,20 +37,46 @@ public class Aluno {
 		this.nome = retiraCaracter(nome, '"');
 	}
 	public String getEmail() {
-		return email;
+		if(email.trim().equalsIgnoreCase("")){
+			return this.nome;
+		}else{
+			return email;	
+		}
+		
 	}
 	public void setEmail(String email) {
 		this.email = retiraCaracter(email, '"');
 	}
 	public String getDtNasc() {
-		return dtNasc;
+		if(dtNasc.equalsIgnoreCase("")){
+			int posfinal;
+			if(nome.length() < 20){
+				posfinal = nome.length();
+			}else{
+				posfinal = 20;
+			}
+			return this.nome.substring(0, posfinal);
+		}else{
+			return dtNasc;	
+		}
 
 	}
 	public void setDtNasc(String dtNasc) {
 		this.dtNasc = retiraCaracter(dtNasc, '"');
 	}
 	public String getTelefone1() {
-		return telefone1;
+		if(telefone1.equalsIgnoreCase("")){
+			int posfinal;
+			if(nome.length() < 28){
+				posfinal = nome.length();
+			}else{
+				posfinal = 28;
+			}
+			return this.nome.substring(0, posfinal);
+		}else{
+			return telefone1;	
+		}
+		
 	}
 	public void setTelefone1(String telefone1) {
 		this.telefone1 = retiraCaracter(telefone1, '"');
@@ -119,7 +146,7 @@ public class Aluno {
 			Class.forName("org.gjt.mm.mysql.Driver").newInstance();
 			Connection conn = b.getConn();
 			Statement st = conn.createStatement();
-			String sql = "SELECT idAluno FROM Aluno WHERE email='" + this.getEmail().trim() + "'";
+			String sql = "SELECT idAluno FROM Aluno WHERE email='" + this.getEmail().trim() + "'" + " and dtNasc='" +  this.getDtNasc().trim()+ "'";
 			st.executeQuery(sql);
 			rs = st.getResultSet();
 			if(rs.next()){
